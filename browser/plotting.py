@@ -1,8 +1,8 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
 import grades
 from datetime import datetime
+import pandas as pd
+import plotly.express as px
 
 st.set_page_config(page_title="HAC PLOTTER", layout="wide")
 
@@ -36,6 +36,7 @@ if not use_sample:
 else:
     username = ""
     password = ""
+
 if (username and password) or use_sample:
     grade_object = get_grades_cached(username, password, use_sample)
 
@@ -44,15 +45,10 @@ if (username and password) or use_sample:
         st.warning("No classes with assignments found.")
         st.stop()
 
-    selected_classes = st.multiselect("Select classes to plot", classes, default=classes)
 
-    if not selected_classes:
-        st.warning("Select at least one class to plot.")
-        st.stop()
+    plot_data = []
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    for class_name in selected_classes:
+    for class_name in classes:
         assignments = grade_object[class_name]["assignments"]
         weighting = grade_object[class_name].get("weighting", {})
 
@@ -62,17 +58,30 @@ if (username and password) or use_sample:
         total = weighting.get("Total Points:", 100)
 
         dates, grades_list = calculate_grade_over_time(assignments, major, minor, other, total)
-        if not dates:
-            continue
+        for date, grade in zip(dates, grades_list):
+            plot_data.append({"Class": class_name, "Date": date, "Grade (%)": grade})
 
-        ax.plot(dates, grades_list, marker="o", label=class_name)
+    if not plot_data:
+        st.warning("No valid assignment dates found to plot.")
+        st.stop()
 
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Grade (%)")
-    ax.set_title("Grade Trend Over Time")
-    ax.legend()
-    plt.xticks(rotation=90)
-    plt.tight_layout()
+    df = pd.DataFrame(plot_data)
 
-    st.pyplot(fig)
+    # Plotly Express line plot with markers and interactive hover
+    fig = px.line(
+        df,
+        x="Date",
+        y="Grade (%)",
+        color="Class",
+        markers=True,
+        title="Grade Trend Over Time",
+    )
 
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Grade (%)",
+        legend_title_text='Class',
+        hovermode="x unified"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)

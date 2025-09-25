@@ -1,12 +1,17 @@
-from typing import Any
 from api import main
 import json
 from datetime import datetime
+from os import path
 
 # get a dict of classes with a list of assignments for the year as the assignments, sorted by date, and weighting has the weighting
-def get_grades(username, password):
-    grades_json = json.loads(main.assignments(username, password))
-    print(grades_json)
+def get_grades(username, password, use_sample=False):
+    if use_sample:
+        f = open(path.relpath("./browser/sample.json"), 'r')
+        grades_json = json.load(f)
+    else:
+        grades_json = json.loads(main.assignments(username, password))
+        with open("sample.json", "w") as outfile:
+            json.dump(grades_json, outfile, indent=4)
     classes = {}
     for class_name in grades_json:
         classes[class_name] = {}

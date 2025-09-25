@@ -7,8 +7,8 @@ from datetime import datetime
 st.set_page_config(page_title="HAC PLOTTER", layout="wide")
 
 @st.cache_data
-def get_grades_cached(username: str, password: str):
-    return grades.get_grades(username, password)
+def get_grades_cached(username: str, password: str, use_sample=False):
+    return grades.get_grades(username, password, use_sample=use_sample)
 
 def calculate_grade_over_time(assignments, major, minor, other, total):
     dates = []
@@ -31,9 +31,9 @@ st.title("Grade Trend Viewer")
 
 username = st.text_input("Username")
 password = st.text_input("Password", type="password")
-
-if username and password:
-    grade_object = get_grades_cached(username, password)
+use_sample_button = st.button("Use Sample Grades")
+if (username and password) or use_sample_button:
+    grade_object = get_grades_cached(username, password, use_sample_button)
 
     classes = [c for c in grade_object if grade_object[c]["assignments"]]
     if not classes:

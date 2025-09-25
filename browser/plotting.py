@@ -1,11 +1,10 @@
-
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import grades
 from datetime import datetime
 
-st.set_page_config(page_title="Grade Trend Viewer", layout="wide")
+st.set_page_config(page_title="HAC PLOTTER", layout="wide")
 
 @st.cache_data
 def get_grades_cached(username: str, password: str):

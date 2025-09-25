@@ -35,14 +35,23 @@ def calculate_grades(assignments: list, major: float, minor: float, other: float
 
     for assignment in assignments:
         if assignment[3] == "Major" and assignment[4]:
-            if assignment[4]:
+            try:
                 majors.append(float(assignment[4]))
+            except ValueError:
+                if(assignment[4]):
+                    majors.append(0)
         elif assignment[3] == "Minor" and assignment[4]:
-            if assignment[4]:
+            try:
                 minors.append(float(assignment[4]))
+            except ValueError:
+                if(assignment[4]):
+                    minors.append(0)
         elif assignment[3] == "Other" and assignment[4]:
-            if assignment[4]:
+            try:
                 others.append(float(assignment[4]))
+            except ValueError:
+                if(assignment[4]):
+                    others.append(0)
 
     if len(others) > 1:
         others = sorted(others)[1:]

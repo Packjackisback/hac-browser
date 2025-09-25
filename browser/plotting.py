@@ -28,12 +28,16 @@ def calculate_grade_over_time(assignments, major, minor, other, total):
     return dates, grade_values
 
 st.title("Grade Trend Viewer")
+use_sample = st.checkbox("Use Sample Grades", value=False)
 
-username = st.text_input("Username")
-password = st.text_input("Password", type="password")
-use_sample_button = st.button("Use Sample Grades")
-if (username and password) or use_sample_button:
-    grade_object = get_grades_cached(username, password, use_sample_button)
+if not use_sample:
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+else:
+    username = ""
+    password = ""
+if (username and password) or use_sample:
+    grade_object = get_grades_cached(username, password, use_sample)
 
     classes = [c for c in grade_object if grade_object[c]["assignments"]]
     if not classes:

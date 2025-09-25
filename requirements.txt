@@ -1,0 +1,6 @@
+Flask
+requests
+bs4
+lxml
+python-dotenv
+matplotlib
